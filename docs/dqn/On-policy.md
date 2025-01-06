@@ -1,0 +1,1 @@
+Ta sama polityka wykorzystywana jest do trenowania i działania.

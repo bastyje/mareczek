@@ -1,0 +1,1 @@
+Technika, służąca do estymacji wartości funkcji błędu, która stabilizuje proces uczenia [[Deep Q-Network]]. Cel obliczany jest na podstawie stałego zestawu parametrów (aktualizowanego co jakiś czas wartością rzeczywistej Q-tablicy). 

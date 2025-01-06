@@ -1,0 +1,1 @@
+Polityka, w której agent podejmuje eksploatację (wybiera akcję, dla której Q-funkcja zwraca najwyższą wartość) z prawdopodobieństwem $1-\epsilon$, a eksplorację (podejmuje losową akcję) z prawdopodobieństwem $\epsilon$. Na początku treningu wartość $\epsilon$ jest bliska $1$, natomiast wraz z upływem czasu wartość ta dąży do $0$. 

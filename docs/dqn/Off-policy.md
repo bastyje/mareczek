@@ -1,0 +1,1 @@
+Do działania i uczenia wykorzystywane są różne polityki.

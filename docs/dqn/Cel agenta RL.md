@@ -1,0 +1,1 @@
+Celem agenta RL jest znalezienie optymalnej polityki $\pi^*$.
