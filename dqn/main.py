@@ -1,24 +1,24 @@
-import argparse
+import os
 
 import gymnasium as gym
 import ale_py
 
-from dqn import DQN1
+import dqn
+import ui
 from train import train
 
-envs = ['ALE/DonkeyKong-v5', 'ALE/SpaceInvaders-v5']
-parser = argparse.ArgumentParser()
-parser.add_argument('--env', type=str, default='ALE/DonkeyKong-v5', choices=envs)
-args = parser.parse_args()
+args = ui.get_args()
 
 gym.register_envs(ale_py)
+env = gym.make(args.env, obs_type='grayscale')
 
-if args.env == 'ALE/DonkeyKong-v5':
-    env = gym.make('ALE/DonkeyKong-v5', obs_type='grayscale')
+network = dqn.create(args.cnn, env.observation_space.shape, env.action_space.n)
+target_network = dqn.create(args.cnn, env.observation_space.shape, env.action_space.n)
 
-    network = DQN1()
-    target_network = DQN1()
-    model_dir = 'donkey-kong'
-    episodes = 1000
+model_dir = f'models{"-cnn" if args.cnn else ""}/' + args.env.replace('/', '_')
+episodes = 1000
 
-    train(model_dir, episodes, env, network, target_network)
+if not os.path.exists(model_dir):
+    os.makedirs(model_dir)
+
+train(model_dir, episodes, env, network, target_network)

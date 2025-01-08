@@ -1,23 +1,28 @@
-import argparse
-
 import gymnasium as gym
 import ale_py
 
-from dqn import DQN1
+import dqn
+import ui
 from dqn_agent import DQNAgent
+from train import newest_model_path
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--render', action='store_true')
-args = parser.parse_args()
+args = ui.get_args()
 
 gym.register_envs(ale_py)
-env = gym.make('ALE/DonkeyKong-v5', obs_type='grayscale', render_mode='human' if args.render else 'rgb_array')
+env = gym.make(args.env, obs_type='grayscale', render_mode='human' if args.render else 'rgb_array')
+
+network = dqn.create(args.cnn, env.observation_space.shape, env.action_space.n)
+target_network = dqn.create(args.cnn, env.observation_space.shape, env.action_space.n)
 
 terminated = False
 state, _ = env.reset()
-agent = DQNAgent(env, DQN1(), DQN1())
-agent.load_model('dqn_agent.pth')
 total_reward = 0
+
+agent = DQNAgent(env, network, target_network)
+model_dir = f'models{"-cnn" if args.cnn else ""}/' + args.env.replace('/', '_')
+newest_model = newest_model_path(model_dir)
+agent.load_model(newest_model)
+
 while not terminated:
     action = agent.act(state)
     state, reward, terminated, truncated, _ = env.step(action)
