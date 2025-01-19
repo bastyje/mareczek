@@ -6,4 +6,5 @@ def get_args() -> argparse.Namespace:
     parser.add_argument('--env', type=str, default='ALE/DonkeyKong-v5')
     parser.add_argument('--cnn', action='store_true')
     parser.add_argument('--render', action='store_true')
+    parser.add_argument('--steps', type=int, default=1)
     return parser.parse_args()

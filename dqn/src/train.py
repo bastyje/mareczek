@@ -5,8 +5,8 @@ import gymnasium as gym
 import numpy as np
 import torch
 
-import logger
-from dqn_agent import DQNAgent
+from utils import logger
+from agents.dqn_agent import DQNAgent
 
 
 __version_length = 3
@@ -73,6 +73,7 @@ def train(agent: DQNAgent, model_name: str, episodes: int, env: gym.Env) -> None
     scores = []
 
     load_model(agent, model_name)
+    logger.init(model_name)
 
     try:
         iterate(episodes, env, agent, dtype, scores)

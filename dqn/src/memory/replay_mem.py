@@ -1,13 +1,12 @@
 import random
 
-from collections import namedtuple, deque
-from typing import List, Tuple
+from collections import deque
+from typing import Tuple
 
 import torch
 
-Transition = namedtuple(
-    typename='Transition',
-    field_names=('state', 'action', 'reward', 'next_state', 'done'))
+from memory.transition import Transition
+
 
 class ReplayMemory:
     __memory: deque[Transition]

@@ -2,8 +2,8 @@ parameters:
   epsilon: 1.0
   epsilon_decay: 0.998
   epsilon_min: 0.01
-  gamma: 0.99
+  gamma: 0.97
   batch_size: 32
   learning_rate: 0.001
   target_update: 10
-  buffer_size: 10000
+  buffer_size: 20000
