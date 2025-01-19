@@ -6,13 +6,12 @@ logger.setLevel(logging.INFO)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
-def log_episode(episode: int):
-    logger.info(f'Episode {episode}')
+def log_device(device: str):
+    logger.info(f'Device: {device}')
 
 
-def try_log_action(actions: int, score: float, epsilon: float):
-    if actions % 100 == 0:
-        logger.info(f'Actions: {actions}, Epsilon: {epsilon:.10f}, Score: {score:.0f}')
+def log_episode_summary(episode: int, score: float, epsilon: float, total_score: float):
+    logger.info(f'Finished episode {episode}; total score {total_score:.0f}; avg score {score:.0f}; epsilon {epsilon:.10f}')
 
 
 def log_model_loaded(model_file: str):

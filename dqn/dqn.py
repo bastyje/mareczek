@@ -7,11 +7,11 @@ class DQN1(nn.Module):
     Deep Q-Network with 1 hidden layer, all layers are fully connected.
     """
 
-    def __init__(self, input_shape: tuple[int, int], output_shape: int):
+    def __init__(self, input_size: int, hidden_size: int, output_size: int):
         super().__init__()
-        self.fc1 = nn.Linear(input_shape[0] * input_shape[1], 128)
-        self.fc2 = nn.Linear(128, 128)
-        self.fc3 = nn.Linear(128, output_shape)
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, output_size)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = x.view(x.size(0), -1) if x.dim() == 3 else x.view(1, -1)
@@ -25,7 +25,7 @@ class DQN2(nn.Module):
     Deep Q-Network with CNN layers.
     """
 
-    def __init__(self, input_shape: tuple[int, int], output_shape: int):
+    def __init__(self, input_shape: tuple[int, ...], output_shape: int):
         super().__init__()
         self.conv1 = nn.Conv2d(1, 16, kernel_size=3, stride=2)
         self.max_pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
@@ -61,5 +61,3 @@ class DQN2(nn.Module):
     def __max_pool2d_size(value: tuple[int, ...], kernel: int, stride: int) -> tuple[int, ...]:
         return tuple(map(lambda x: (x - kernel) // stride + 1, value))
 
-def create(cnn: bool, input_shape: tuple[int, int], output_shape: int) -> nn.Module:
-    return DQN2(input_shape, output_shape) if cnn else DQN1(input_shape, output_shape)
