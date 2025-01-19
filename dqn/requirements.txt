@@ -2,3 +2,4 @@ torch~=2.5.1
 gymnasium~=1.0.0
 numpy~=2.2.1
 pyyaml~=6.0.2
+ale-py~=0.10.1
