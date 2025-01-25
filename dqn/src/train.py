@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import gymnasium as gym
 import numpy as np
@@ -7,36 +6,19 @@ import torch
 
 from utils import logger
 from agents.dqn_agent import DQNAgent
+from utils.files import FileParams
 
 
-__version_length = 3
-def next_model_path(model_dir: str) -> str:
-    previous = newest_model_path(model_dir)
-    if previous is None:
-        return os.path.join(model_dir, '0'.zfill(__version_length))
-    previous_version = int(os.path.split(previous)[-1])
-    return os.path.join(model_dir, str(previous_version + 1).zfill(__version_length))
-
-def newest_model_path(model_dir: str) -> Optional[str]:
-    if not os.path.exists(model_dir):
-        return None
-    versions = [int(f) for f in os.listdir(model_dir) if f.isdigit()]
-    if not versions:
-        return None
-    return os.path.join(model_dir, str(max(versions)).zfill(__version_length))
-
-
-def load_model(agent: DQNAgent, model_name: str) -> None:
-    newest_model = newest_model_path(model_name)
-    if newest_model is not None:
+def load_model(agent: DQNAgent, params: FileParams) -> None:
+    newest_model = params.get_last_model_path()
+    if newest_model is not None and os.path.exists(newest_model):
         agent.load_model(newest_model)
         logger.log_model_loaded(newest_model)
 
 
-def save_model(agent: DQNAgent, model_name: str) -> None:
-    new_model_version = next_model_path(model_name)
-    agent.save_model(new_model_version)
-    logger.log_model_saved(new_model_version)
+def save_model(agent: DQNAgent, path: str) -> None:
+    agent.save_model(path)
+    logger.log_model_saved(path)
 
 
 def iterate(episodes: int, env: gym.Env, agent: DQNAgent, dtype: torch.dtype, scores: list) -> None:
@@ -59,21 +41,26 @@ def iterate(episodes: int, env: gym.Env, agent: DQNAgent, dtype: torch.dtype, sc
             score += reward
 
             state = next_state
-            agent.try_update_target_network(episode)
 
             actions += 1
 
+        agent.try_update_target_network(episode)
         scores.append(score.item())
         logger.log_episode_summary(episode, float(np.mean(scores)), agent.get_epsilon(), score.item())
         agent.update_epsilon()
 
 
-def train(agent: DQNAgent, model_name: str, episodes: int, env: gym.Env) -> None:
+def train(agent: DQNAgent, params: FileParams, episodes: int, env: gym.Env) -> None:
     dtype = torch.float32
     scores = []
 
-    load_model(agent, model_name)
-    logger.init(model_name)
+    load_model(agent, params)
+    new_model_version = params.get_new_version()
+    os.makedirs(params.get_model_dir(new_model_version), exist_ok=True)
+    with open(params.get_log_path(new_model_version), 'w') as f:
+        f.write(str(agent.get_hyperparameters()))
+    logger.init(params.get_log_path(new_model_version))
+    logger.log_hyperparameters(agent.get_hyperparameters())
 
     try:
         iterate(episodes, env, agent, dtype, scores)
@@ -82,4 +69,4 @@ def train(agent: DQNAgent, model_name: str, episodes: int, env: gym.Env) -> None
         pass
     finally:
         env.close()
-        save_model(agent, model_name)
+        save_model(agent, params.get_model_path(new_model_version))

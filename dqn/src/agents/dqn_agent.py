@@ -18,7 +18,8 @@ class DQNAgent(BaseDQNAgent):
             batch_size: int = 32,
             learning_rate: float = 0.001,
             target_update: int = 10,
-            buffer_size: int = 10000):
+            buffer_size: int = 10000,
+            reward_modifier=None):
         super().__init__(
             env,
             network,
@@ -30,7 +31,8 @@ class DQNAgent(BaseDQNAgent):
             batch_size,
             learning_rate,
             target_update,
-            buffer_size)
+            buffer_size,
+            reward_modifier)
 
     def step(self, state, action, reward, next_state, done):
         self._memory.push(state, action, reward, next_state, done)

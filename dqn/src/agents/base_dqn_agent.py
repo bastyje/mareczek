@@ -15,6 +15,7 @@ class BaseDQNAgent(ABC):
     _target_network: nn.Module
     _memory: ReplayMemory
     _optimizer: torch.optim.Optimizer
+    _reward_modifier: callable
 
     _epsilon: float
     _epsilon_decay: float
@@ -36,7 +37,9 @@ class BaseDQNAgent(ABC):
             batch_size: int = 32,
             learning_rate: float = 0.001,
             target_update: int = 10,
-            buffer_size: int = 10000):
+            buffer_size: int = 10000,
+            reward_modifier=None):
+        self._reward_modifier = reward_modifier
         self._init_parameters(epsilon, epsilon_decay, epsilon_min, gamma, batch_size, learning_rate, target_update)
         self.device = self._get_device()
         self._env = env
@@ -46,6 +49,17 @@ class BaseDQNAgent(ABC):
         self._target_network.eval()
         self._memory = ReplayMemory(buffer_size)
         self._optimizer = torch.optim.Adam(self._network.parameters(), lr=self._learning_rate)
+
+    def get_hyperparameters(self) -> dict:
+        return {
+            "epsilon": self._epsilon,
+            "epsilon_decay": self._epsilon_decay,
+            "epsilon_min": self._epsilon_min,
+            "gamma": self._gamma,
+            "batch_size": self._batch_size,
+            "learning_rate": self._learning_rate,
+            "target_update": self._target_update
+        }
 
     def _init_parameters(
             self,
@@ -122,3 +136,6 @@ class BaseDQNAgent(ABC):
             "mps" if torch.backends.mps.is_available() else
             "cpu"
         )
+
+    def modify_reward(self, reward, action) -> float:
+        return reward if self._reward_modifier is None else self._reward_modifier(action, reward)

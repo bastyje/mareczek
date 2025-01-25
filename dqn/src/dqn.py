@@ -14,7 +14,7 @@ class DQN1(nn.Module):
         self.fc3 = nn.Linear(hidden_size, output_size)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = x.view(x.size(0), -1) if x.dim() == 3 else x.view(1, -1)
+        x = x.view(x.size(0), -1) if x.dim() == 2 else x.view(1, -1) # todo change to x.dim() == 3 for not ram mode
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         x = self.fc3(x)

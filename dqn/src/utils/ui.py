@@ -7,4 +7,5 @@ def get_args() -> argparse.Namespace:
     parser.add_argument('--cnn', action='store_true')
     parser.add_argument('--render', action='store_true')
     parser.add_argument('--steps', type=int, default=1)
+    parser.add_argument('--obs-type', type=str, default='grayscale')
     return parser.parse_args()

@@ -1,7 +1,4 @@
 import logging
-import os
-import sys
-from datetime import datetime
 
 
 logger = logging.getLogger('dqn')
@@ -9,8 +6,7 @@ logger.setLevel(logging.INFO)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
-def init(model_name: str):
-    file_path = os.path.join('logs', f'{model_name}_{datetime.now().strftime("%Y%m%d%H%M%S")}.log')
+def init(file_path: str):
     fh = logging.FileHandler(file_path)
     fh.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -36,3 +32,7 @@ def log_model_saved(model_file: str):
 
 def log_training_done():
     logger.info('Training done')
+
+
+def log_hyperparameters(hyperparameters: dict):
+    logger.info(f'Hyperparameters: {hyperparameters}')
