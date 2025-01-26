@@ -35,7 +35,13 @@ class NStepDQNAgent(BaseDQNAgent):
             target_update,
             buffer_size,
             reward_modifier)
+        self.__n_steps = n_steps
         self.__n_step_buffer = NStepMemory(n_steps, self._gamma)
+
+    def get_hyperparameters(self) -> dict:
+        hyperparameters = super().get_hyperparameters()
+        hyperparameters['n_steps'] = self.__n_steps
+        return hyperparameters
 
     def step(self, step, action, reward, next_state, done):
         self.__n_step_buffer.store((step, action, reward, next_state, done))

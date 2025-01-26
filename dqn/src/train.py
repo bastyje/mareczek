@@ -1,24 +1,14 @@
 import os
+from typing import Optional
 
 import gymnasium as gym
 import numpy as np
 import torch
+import yaml
 
 from utils import logger
 from agents.dqn_agent import DQNAgent
 from utils.files import FileParams
-
-
-def load_model(agent: DQNAgent, params: FileParams) -> None:
-    newest_model = params.get_last_model_path()
-    if newest_model is not None and os.path.exists(newest_model):
-        agent.load_model(newest_model)
-        logger.log_model_loaded(newest_model)
-
-
-def save_model(agent: DQNAgent, path: str) -> None:
-    agent.save_model(path)
-    logger.log_model_saved(path)
 
 
 def iterate(episodes: int, env: gym.Env, agent: DQNAgent, dtype: torch.dtype, scores: list) -> None:
@@ -50,15 +40,16 @@ def iterate(episodes: int, env: gym.Env, agent: DQNAgent, dtype: torch.dtype, sc
         agent.update_epsilon()
 
 
-def train(agent: DQNAgent, params: FileParams, episodes: int, env: gym.Env) -> None:
+def train(agent: DQNAgent, params: FileParams, episodes: int, env: gym.Env, previous_version: Optional[int]) -> None:
     dtype = torch.float32
     scores = []
 
-    load_model(agent, params)
+    if previous_version is not None:
+        agent.load_model(params.get_model_path(previous_version))
     new_model_version = params.get_new_version()
     os.makedirs(params.get_model_dir(new_model_version), exist_ok=True)
-    with open(params.get_log_path(new_model_version), 'w') as f:
-        f.write(str(agent.get_hyperparameters()))
+    with open(params.get_config_path(new_model_version), 'w') as f:
+        f.write(yaml.dump(agent.get_hyperparameters()))
     logger.init(params.get_log_path(new_model_version))
     logger.log_hyperparameters(agent.get_hyperparameters())
 
@@ -69,4 +60,4 @@ def train(agent: DQNAgent, params: FileParams, episodes: int, env: gym.Env) -> N
         pass
     finally:
         env.close()
-        save_model(agent, params.get_model_path(new_model_version))
+        agent.save_model(params.get_model_path(new_model_version))

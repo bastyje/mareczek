@@ -31,20 +31,12 @@ avg_time = sum(time_diffs) / len(time_diffs) if time_diffs else 0
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
 
-# ax1.plot(total_scores, label='Total Score')
 ax1.plot(avg_scores, label='Average Score')
 ax1.plot(range(99, len(total_scores)), rolling_mean_total_scores, label='Rolling Mean Total Score (100)', linestyle='--')
 ax1.set_xlabel('Episode')
 ax1.set_ylabel('Score')
 ax1.set_title('Scores per Episode')
 ax1.legend()
-
-ax2.plot([0] + time_diffs, label='Episode Time')
-ax2.axhline(y=avg_time, color='r', linestyle='--', label=f'Average Time: {avg_time:.2f} seconds')
-ax2.set_xlabel('Episode')
-ax2.set_ylabel('Time (seconds)')
-ax2.set_title('Time per Episode')
-ax2.legend()
 
 plt.tight_layout()
 plt.show()

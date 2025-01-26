@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 
 import gymnasium as gym
@@ -5,6 +6,7 @@ import torch
 from torch import nn
 
 from memory.replay_mem import ReplayMemory
+from utils import logger
 
 
 class BaseDQNAgent(ABC):
@@ -50,6 +52,7 @@ class BaseDQNAgent(ABC):
         self._memory = ReplayMemory(buffer_size)
         self._optimizer = torch.optim.Adam(self._network.parameters(), lr=self._learning_rate)
 
+    @abstractmethod
     def get_hyperparameters(self) -> dict:
         return {
             "epsilon": self._epsilon,
@@ -58,7 +61,7 @@ class BaseDQNAgent(ABC):
             "gamma": self._gamma,
             "batch_size": self._batch_size,
             "learning_rate": self._learning_rate,
-            "target_update": self._target_update
+            "target_update": self._target_update,
         }
 
     def _init_parameters(
@@ -116,10 +119,13 @@ class BaseDQNAgent(ABC):
 
     def save_model(self, path: str):
         torch.save(self._network.state_dict(), path)
+        logger.log_model_saved(path)
 
     def load_model(self, path: str):
-        self._network.load_state_dict(torch.load(path))
-        self._target_network.load_state_dict(self._network.state_dict())
+        if path is not None and os.path.exists(path):
+            self._network.load_state_dict(torch.load(path))
+            self._target_network.load_state_dict(self._network.state_dict())
+            logger.log_model_loaded(path)
 
     @staticmethod
     def evaluate(network: nn.Module, state: torch.Tensor) -> torch.Tensor:

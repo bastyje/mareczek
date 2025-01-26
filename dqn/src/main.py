@@ -15,7 +15,8 @@ args = ui.get_args()
 gym.register_envs(ale_py)
 env = gym.make(args.env, obs_type=args.obs_type)
 
-if args.obs_type == 'ram':
+is_ram = args.obs_type == 'ram'
+if is_ram:
     input_size = env.observation_space.shape[0]
 else:
     input_size = env.observation_space.shape[0] * env.observation_space.shape[1]
@@ -23,13 +24,13 @@ else:
 hidden_size = 64
 output_size = env.action_space.n
 
-network = dqn.DQN1(input_size, hidden_size, output_size) if not args.cnn else dqn.DQN2(env.observation_space.shape, output_size)
-target_network = dqn.DQN1(input_size, hidden_size, output_size) if not args.cnn else dqn.DQN2(env.observation_space.shape, output_size)
+network = dqn.DQN1(input_size, hidden_size, output_size, is_ram) if not args.cnn else dqn.DQN2(env.observation_space.shape, output_size)
+target_network = dqn.DQN1(input_size, hidden_size, output_size, is_ram) if not args.cnn else dqn.DQN2(env.observation_space.shape, output_size)
 
 episodes = 1000
 
 with open('agent-config.yaml', 'r') as f:
-    agent_config = yaml.safe_load(f)['train-parameters']
+    agent_config = yaml.safe_load(f)
 
 modifier = None
 if args.env.startswith('ALE/SpaceInvaders'):
@@ -68,4 +69,4 @@ else:
     )
 
 file_params = FileParams(args.env, args.cnn, args.obs_type)
-train(agent, file_params, episodes, env)
+train(agent, file_params, episodes, env, args.continue_from)

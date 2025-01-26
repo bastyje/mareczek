@@ -7,14 +7,15 @@ class DQN1(nn.Module):
     Deep Q-Network with 1 hidden layer, all layers are fully connected.
     """
 
-    def __init__(self, input_size: int, hidden_size: int, output_size: int):
+    def __init__(self, input_size: int, hidden_size: int, output_size: int, ram: bool):
         super().__init__()
         self.fc1 = nn.Linear(input_size, hidden_size)
         self.fc2 = nn.Linear(hidden_size, hidden_size)
         self.fc3 = nn.Linear(hidden_size, output_size)
+        self.ram = ram
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = x.view(x.size(0), -1) if x.dim() == 2 else x.view(1, -1) # todo change to x.dim() == 3 for not ram mode
+        x = x.view(x.size(0), -1) if x.dim() == (2 if self.ram else 3) else x.view(1, -1)
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         x = self.fc3(x)

@@ -1,18 +1,8 @@
-train-parameters:
-  epsilon: 1.0
-  epsilon_decay: 0.995
-  epsilon_min: 0.01
-  gamma: 0.9
-  batch_size: 64
-  learning_rate: 0.001
-  target_update: 100
-  buffer_size: 10000
-test-parameters:
-  epsilon: 0.01
-  epsilon_decay: 0.998
-  epsilon_min: 0.01
-  gamma: 0.97
-  batch_size: 32
-  learning_rate: 0.001
-  target_update: 10
-  buffer_size: 20000
+epsilon: 1.0
+epsilon_decay: 0.995
+epsilon_min: 0.01
+gamma: 0.3
+batch_size: 64
+learning_rate: 0.001
+target_update: 100
+buffer_size: 10000
