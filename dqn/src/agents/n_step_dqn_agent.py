@@ -21,7 +21,8 @@ class NStepDQNAgent(BaseDQNAgent):
             target_update: int = 10,
             buffer_size: int = 10000,
             n_steps: int = 3,
-            reward_modifier=None):
+            reward_modifier=None,
+            device=None):
         super().__init__(
             env,
             network,
@@ -34,7 +35,8 @@ class NStepDQNAgent(BaseDQNAgent):
             learning_rate,
             target_update,
             buffer_size,
-            reward_modifier)
+            reward_modifier,
+            device)
         self.__n_steps = n_steps
         self.__n_step_buffer = NStepMemory(n_steps, self._gamma)
 

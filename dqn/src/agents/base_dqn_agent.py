@@ -40,10 +40,11 @@ class BaseDQNAgent(ABC):
             learning_rate: float = 0.001,
             target_update: int = 10,
             buffer_size: int = 10000,
-            reward_modifier=None):
+            reward_modifier=None,
+            device: torch.device = None):
         self._reward_modifier = reward_modifier
         self._init_parameters(epsilon, epsilon_decay, epsilon_min, gamma, batch_size, learning_rate, target_update)
-        self.device = self._get_device()
+        self.device = self._get_device() if device is None else device
         self._env = env
         self._network = network.to(self.device)
         self._target_network = target_network.to(self.device)

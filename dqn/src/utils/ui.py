@@ -9,4 +9,5 @@ def get_args() -> argparse.Namespace:
     parser.add_argument('--steps', type=int, default=1)
     parser.add_argument('--obs-type', type=str, default='grayscale')
     parser.add_argument('--continue-from', type=int, default=None)
+    parser.add_argument('--device', type=str, default=None)
     return parser.parse_args()

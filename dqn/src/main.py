@@ -49,7 +49,7 @@ if args.steps == 1:
         learning_rate=agent_config['learning_rate'],
         target_update=agent_config['target_update'],
         buffer_size=agent_config['buffer_size'],
-        # reward_modifier=modifier
+        device=args.device,
     )
 else:
     agent = NStepDQNAgent(
@@ -65,7 +65,7 @@ else:
         target_update=agent_config['target_update'],
         buffer_size=agent_config['buffer_size'],
         n_steps=args.steps,
-        # reward_modifier=modifier
+        device=args.device,
     )
 
 file_params = FileParams(args.env, args.cnn, args.obs_type)
