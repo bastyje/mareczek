@@ -62,3 +62,23 @@ class DQN2(nn.Module):
     def __max_pool2d_size(value: tuple[int, ...], kernel: int, stride: int) -> tuple[int, ...]:
         return tuple(map(lambda x: (x - kernel) // stride + 1, value))
 
+class DQN3(nn.Module):
+    """
+    Deep Q-Network with three hidden layers, all layers are fully connected.
+    """
+
+    def __init__(self, input_size: int, hidden_size: int, output_size: int, ram: bool):
+        super().__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, hidden_size)
+        self.fc4 = nn.Linear(hidden_size, output_size)
+        self.ram = ram
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x.view(x.size(0), -1) if x.dim() == (2 if self.ram else 3) else x.view(1, -1)
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = torch.relu(self.fc3(x))
+        x = self.fc4(x)
+        return x

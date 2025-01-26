@@ -24,8 +24,15 @@ else:
 hidden_size = 64
 output_size = env.action_space.n
 
-network = dqn.DQN1(input_size, hidden_size, output_size, is_ram) if not args.cnn else dqn.DQN2(env.observation_space.shape, output_size)
-target_network = dqn.DQN1(input_size, hidden_size, output_size, is_ram) if not args.cnn else dqn.DQN2(env.observation_space.shape, output_size)
+if args.cnn:
+    network = dqn.DQN2(env.observation_space.shape, output_size)
+    target_network = dqn.DQN2(env.observation_space.shape, output_size)
+elif args.deep:
+    network = dqn.DQN3(input_size, hidden_size, output_size, is_ram)
+    target_network = dqn.DQN3(input_size, hidden_size, output_size, is_ram)
+else:
+    network = dqn.DQN1(input_size, hidden_size, output_size, is_ram)
+    target_network = dqn.DQN1(input_size, hidden_size, output_size, is_ram)
 
 episodes = 1000
 
