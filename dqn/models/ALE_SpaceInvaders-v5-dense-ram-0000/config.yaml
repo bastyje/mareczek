@@ -1,8 +1,8 @@
+batch_size: 64
 epsilon: 1.0
 epsilon_decay: 0.995
 epsilon_min: 0.01
-gamma: 0.95
-batch_size: 64
-learning_rate: 0.015
+gamma: 0.7
+learning_rate: 0.001
+n_steps: 4
 target_update: 100
-buffer_size: 10000

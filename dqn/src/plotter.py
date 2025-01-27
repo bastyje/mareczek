@@ -86,14 +86,49 @@ def plot_multiple(model_dirs: list[str], mean: str):
     plt.show()
 
 
+def plot_time():
+    models_types = ['ALE_SpaceInvaders-v5-cnn-ram', 'ALE_SpaceInvaders-v5-dense-ram', 'ALE_SpaceInvaders-v5-deep-dense-ram']
+    model_dirs = os.listdir('models')
+    time_pattern = re.compile(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - dqn - INFO - Finished episode \d+; total score \d+; avg score \d+; epsilon')
+    mean_times = {}
+    for model_dir in model_dirs:
+        with open(os.path.join('models', model_dir, LOG_FILE), 'r') as f:
+            timestamps = []
+            for line in f:
+                match = time_pattern.search(line)
+                if match:
+                    timestamps.append(datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S,%f'))
+            total_time = (timestamps[-1] - timestamps[0]).total_seconds()
+            mean_times[model_dir] = total_time / len(timestamps)
+
+    mean_times_type = {}
+    for model_type in models_types:
+        model_type_times = [mean_times[model_dir] for model_dir in model_dirs if model_dir.startswith(model_type)]
+        mean_times_type[model_type] = sum(model_type_times) / len(model_type_times)
+
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+
+    fig, ax1 = plt.subplots(1, 1, figsize=(10, 8))
+    ax1.bar(mean_times_type.keys(), mean_times_type.values(), color=colors[:len(mean_times_type)])
+    ax1.set_xlabel('Model Type')
+    ax1.set_ylabel('Mean Time (seconds)')
+    ax1.set_title('Mean Time per Episode for Each Model Type')
+    plt.tight_layout()
+    plt.show()
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--model-dirs', nargs='+')
 parser.add_argument('--mean', default='rolling', choices=['rolling', 'cumulative'])
+parser.add_argument('--time', action='store_true')
 
 args = parser.parse_args()
 
+if args.time:
+    plot_time()
+    exit()
+
 path = os.path.split(args.model_dirs[0])
-if [-1] == '*':
+if path[-1] == '*':
     path = os.path.join(*path[:-1])
     args.model_dirs = [os.path.join(path, f) for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
 
